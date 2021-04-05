@@ -2,10 +2,11 @@ import glob
 import numpy as np
 from matplotlib import image
 from matplotlib import pyplot
-from sklearn.naive_bayes import MultinomialNB as MultNB
-from sklearn.neighbors import KNeighborsClassifier
 from sklearn import preprocessing
 from sklearn.metrics import accuracy_score
+from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.metrics import classification_report, confusion_matrix
 
 
 # Function designed to read the images from a file given by <path> and return them as a numpy array
@@ -69,6 +70,8 @@ test_images = convertImagesTo2D(test_images)
 
 # ---------MULTINOMIAL NAIVE-BAYES-------------------------
 '''
+from sklearn.naive_bayes import MultinomialNB as MultNB
+
 def put_values_in_bins(matrix, nr_bins):
     ret = np.digitize(matrix, nr_bins)
     return ret
@@ -100,6 +103,7 @@ print("\n Maximum accuracy was recorded at ", best_bin ," number of bins. Accura
 
 # ----------------KNN Classifier----------------------------
 '''
+from sklearn.neighbors import KNeighborsClassifier
 for j in range(1, 3):
     for i in range(1, 30):
         KNN = KNeighborsClassifier(n_neighbors=i, p=j)
@@ -108,21 +112,18 @@ for j in range(1, 3):
 '''
 # ----------------------------------------------------------
 
-# ------------------Masini cu vector suport---------------------------
+# ------------------SVM---------------------------
+'''
 
 from sklearn import svm
-from sklearn.metrics import classification_report, confusion_matrix
-from sklearn.model_selection import GridSearchCV
 
 # kernels = ['rbf'] , 'poly', 'sigmoid', 'precomputed']
 # cAux = [0.01, 0.5, 0.1, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10]
 # cAux = []
-'''
 params = {'C': [0.1, 1, 4.44, 4.45, 4.46, 4.47, 10, 100, 1000],
           'gamma': [1, 0.1, 0.01, 0.001, 0.0001],
           'kernel': ['rbf']}
-'''
-'''
+          
 print("\n+++++++++++++++++++++++++++++++++++++++++++++++++")
 print("+++++++++++++KERNEL ", 'rbf', "+++++++++++++++++++++")
 SVM_model = svm.SVC(C=4.46, kernel='rbf')
@@ -131,7 +132,7 @@ predictions = SVM_model.predict(validation_images)
 print(classification_report(validation_labels, predictions))
 print("++++++++++++++++++++++++++++++++++++++++++++++++++")
 '''
-# --------------------------------------------------------------------
+# ---------------------------GradientBoostingClassifier-----------------------------------------
 '''
 from sklearn.ensemble import GradientBoostingClassifier
 
@@ -151,12 +152,10 @@ for learning_rate in learnings:
     print(classification_report(validation_labels, predictions))
     print("==============================================================================================")
 '''
-# --------------------------------------------------------------------
-from sklearn.neural_network import MLPClassifier
-from sklearn.model_selection import GridSearchCV
-from sklearn.model_selection import RandomizedSearchCV
-
+# ------------------------------MLPClassifier--------------------------------------
 '''
+from sklearn.neural_network import MLPClassifier
+
 params = {
     'hidden_layer_sizes':[(100, ), (50, 50), (30, 30, 30), (100, 100), (100, 100, 100)],
     'activation': ['relu'],
@@ -166,12 +165,11 @@ params = {
     'learning_rate': ['constant', 'adaptive'],
     'n_iter_no_change': [100]
 }
-'''
 
-# cv_search = GridSearchCV(mlp_classifier_model, param_grid=params, refit=True, cv=2, n_jobs=-1, verbose=1)
+cv_search = GridSearchCV(mlp_classifier_model, param_grid=params, refit=True, cv=2, n_jobs=-1, verbose=1)
 
-# cv_search.fit(train_images, train_labels)
-'''
+cv_search.fit(train_images, train_labels)
+
 mlp_classifier_model = MLPClassifier(alpha=0.00001 ,solver="sgd", max_iter=100, momentum=0.98)
 mlp_classifier_model.fit(train_images, train_labels)
 print('\n\n-----Rezultate pe setul de validare --------------------------\n\n')
