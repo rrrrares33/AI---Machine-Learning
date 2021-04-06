@@ -116,17 +116,15 @@ for j in range(1, 3):
 '''
 
 from sklearn import svm
+from sklearn.model_selection import GridSearchCV
 
-# kernels = ['rbf'] , 'poly', 'sigmoid', 'precomputed']
-# cAux = [0.01, 0.5, 0.1, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10]
-# cAux = []
-params = {'C': [0.1, 1, 4.44, 4.45, 4.46, 4.47, 10, 100, 1000],
-          'gamma': [1, 0.1, 0.01, 0.001, 0.0001],
-          'kernel': ['rbf']}
+params = {'C': [0.01, 0.5, 0.1, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10],
+          'kernel': ['rbf', 'poly', 'sigmoid', 'precomputed']}
           
 print("\n+++++++++++++++++++++++++++++++++++++++++++++++++")
 print("+++++++++++++KERNEL ", 'rbf', "+++++++++++++++++++++")
-SVM_model = svm.SVC(C=4.46, kernel='rbf')
+aux = svm.SVC()
+SVM_model = GridSearchCV(aux, n_jobs = -1, param_grid = params, cv = 2, refit = True, verbose = 2)
 SVM_model.fit(train_images, train_labels)
 predictions = SVM_model.predict(validation_images)
 print(classification_report(validation_labels, predictions))
